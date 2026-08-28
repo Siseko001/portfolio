@@ -1,0 +1,88 @@
+---
+const links = [
+  { href: '/', label: 'Home' },
+  {
+    href: '/projects',
+    label: 'Projects',
+    children: [
+      { href: '/projects/car', label: 'Car Price Analysis' },
+      { href: '/projects/face', label: 'Face Recognition Demo' },
+      { href: '/projects', label: 'All Projects' },
+    ],
+  },
+  { href: '/about', label: 'About' },
+  { href: '/education', label: 'Education' },
+  { href: '/skills', label: 'Skills' },
+  { href: '/contact', label: 'Contact' },
+];
+---
+<header class="border-b border-neutral-800">
+  <nav class="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
+    <a href="https://flyrank.ai/" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2">
+  <img src="/flyrank_logo.jpg" alt="Siseko Sodlaka" class="h-8 w-auto" />
+  <span class="text-sm text-neutral-300">FlyRank AI</span>
+</a>
+    <ul class="flex gap-6 text-sm text-neutral-300">
+      {links.map((link) => (
+        link.children ? (
+          <li class="relative group">
+            <button
+              class="flex items-center gap-1 text-neutral-300 hover:text-white transition-colors duration-200 focus:outline-none"
+              aria-haspopup="true"
+              aria-expanded="false"
+              onclick="toggleDropdown(this)"
+            >
+              {link.label}
+              <svg class="w-3.5 h-3.5 transition-transform group-[.open]:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+
+            <ul class="absolute left-0 mt-2 w-48 rounded-lg border border-neutral-800 bg-neutral-900 shadow-lg py-2 opacity-0 invisible translate-y-1 transition-all duration-150 group-[.open]:opacity-100 group-[.open]:visible group-[.open]:translate-y-0 z-10">
+              {link.children.map((child) => (
+                <li>
+                  <a href={child.href} class="block px-4 py-2 text-sm text-neutral-300 hover:bg-neutral-800 hover:text-white">
+                    {child.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </li>
+        ) : (
+          <li>
+            <a href={link.href} class="relative group text-neutral-300 hover:text-white transition-colors duration-200">
+              {link.label}
+              <span class="absolute left-0 -bottom-1 w-0 h-px bg-white transition-all duration-300 group-hover:w-full"></span>
+            </a>
+          </li>
+        )
+      ))}
+    </ul>
+  </nav>
+</header>
+
+<script is:inline>
+function toggleDropdown(btn) {
+  const li = btn.closest('li');
+  const isOpen = li.classList.toggle('open');
+  btn.setAttribute('aria-expanded', isOpen);
+}
+
+document.addEventListener('click', (e) => {
+  document.querySelectorAll('li.open').forEach((li) => {
+    if (!li.contains(e.target)) {
+      li.classList.remove('open');
+      li.querySelector('button')?.setAttribute('aria-expanded', 'false');
+    }
+  });
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    document.querySelectorAll('li.open').forEach((li) => {
+      li.classList.remove('open');
+      li.querySelector('button')?.setAttribute('aria-expanded', 'false');
+    });
+  }
+});
+</script>

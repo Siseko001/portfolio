@@ -1,0 +1,28 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+<BaseLayout title="Contact">
+  <h1 class="text-3xl font-bold tracking-tight mb-6">Contact</h1>
+  <p class="text-neutral-400 mb-8 max-w-xl">
+    Want to get in touch? Reach out through any of the links below.
+  </p>
+   <ul class="space-y-3 text-neutral-300">
+    <li>
+      Email: <a href="mailto:you@example.com" class="underline hover:text-white">you@example.com</a>
+    </li>
+    <li>
+      GitHub: <a href="https://github.com/Siseko001" class="underline hover:text-white">github.com/Siseko001</a>
+    </li>
+    <li>
+      LinkedIn: <a href="https://www.linkedin.com/in/siseko-sodlaka-a55541196" class="underline hover:text-white">linkedin.com/in/siseko-sodlaka</a>
+    </li>
+  </ul>
+  <a
+    href="/resume.pdf"
+    download
+    class="inline-block mt-8 px-8 py-4 rounded-lg bg-white text-neutral-900 text-base font-semibold hover:bg-neutral-200 transition-colors"
+  >
+    Download Resume
+  
+  </a>
+</BaseLayout>
