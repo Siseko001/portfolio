@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 
 // Portfolio assistant widget. Talks to /.netlify/functions/chat, which owns
-// the Claude API key and the tool-use loop — this component only ever sees
+// the Claude API key and the tool-use loop - this component only ever sees
 // plain text in and out.
 
 const ENDPOINT = "/.netlify/functions/chat";
@@ -44,7 +44,7 @@ export default function ChatWidget() {
       });
 
       if (res.status === 429) {
-        setError("You've hit the message limit for now — try again in a bit.");
+        setError("You've hit the message limit for now - try again in a bit.");
         return;
       }
       if (!res.ok) {
@@ -78,7 +78,7 @@ export default function ChatWidget() {
               aria-label="Close chat"
               className="text-gray-300 hover:text-white text-lg leading-none"
             >
-              ×
+              X
             </button>
           </div>
 
@@ -115,7 +115,7 @@ export default function ChatWidget() {
 
             {loading && (
               <div className="mr-auto bg-gray-100 text-gray-500 text-sm px-3 py-2 rounded-lg">
-                Thinking…
+                Thinking...
               </div>
             )}
 
@@ -127,7 +127,7 @@ export default function ChatWidget() {
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask a question…"
+              placeholder="Ask a question..."
               maxLength={2000}
               className="flex-1 text-sm px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900"
             />
@@ -146,7 +146,7 @@ export default function ChatWidget() {
           className="rounded-full bg-gray-900 text-white w-14 h-14 shadow-xl flex items-center justify-center text-xl hover:scale-105 transition-transform"
           aria-label="Open chat"
         >
-          💬
+          Chat
         </button>
       )}
     </div>
