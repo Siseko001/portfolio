@@ -1,6 +1,81 @@
 ---
+import ChatWidget from "../components/ChatWidget.jsx";
 import BaseLayout from '../layouts/BaseLayout.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import { getCollection } from 'astro:content';
+
+const allProjects = await getCollection('projects');
+const featured = allProjects
+  .filter((p) => p.data.featured)
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 ---
 <BaseLayout title="Home">
-  <h1>Hello world</h1>
+  <div class="mb-8">
+   <div class="mb-8 flex justify-end">
+    <input
+      id="project-search"
+      type="text"
+      placeholder="Search projects..."
+      class="w-full sm:w-72 bg-neutral-900 border border-neutral-800 rounded-lg px-4 py-2 text-sm text-neutral-200 placeholder-neutral-500 focus:outline-none focus:border-neutral-600"
+    />
+  </div>
+
+  <section class="mb-16 flex flex-col sm:flex-row items-start sm:items-center gap-6">
+    <img
+      src="/prof-pic.png"
+      alt="Siseko Sodlaka"
+      class="w-28 h-28 rounded-full object-cover border border-neutral-800"
+    />
+    <div>
+      <h1 class="text-4xl font-bold tracking-tight mb-4">Hi, I'm Siseko Sodlaka.</h1>
+      <p class="text-neutral-400 text-lg max-w-xl">
+        Software developer working on data-driven projects, from analysis and
+        machine learning to full-stack apps. Here's a look at some of my work.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="text-xl font-semibold mb-6">Featured work</h2>
+    <div id="project-grid" class="grid gap-6 sm:grid-cols-2">
+      {featured.map((project) => (
+        <div
+          class="project-item"
+          data-title={project.data.title.toLowerCase()}
+          data-tech={project.data.techStack.join(' ').toLowerCase()}
+        >
+          <ProjectCard
+            title={project.data.title}
+            description={project.data.description}
+            techStack={project.data.techStack}
+            slug={project.slug}
+          />
+        </div>
+      ))}
+    </div>
+    <p id="no-results" class="text-neutral-500 text-sm hidden">No projects match your search.</p>
+  </section>
+
+  <ChatWidget client:idle />
+  </div>
 </BaseLayout>
+
+<script>
+  const input = document.getElementById('project-search') as HTMLInputElement;
+  const items = document.querySelectorAll<HTMLElement>('.project-item');
+  const noResults = document.getElementById('no-results');
+
+  input?.addEventListener('input', () => {
+    const query = input.value.trim().toLowerCase();
+    let visibleCount = 0;
+
+    items.forEach((item) => {
+      const matches =
+        item.dataset.title?.includes(query) || item.dataset.tech?.includes(query);
+      item.style.display = matches ? '' : 'none';
+      if (matches) visibleCount++;
+    });
+
+    noResults?.classList.toggle('hidden', visibleCount !== 0);
+  });
+</script>
