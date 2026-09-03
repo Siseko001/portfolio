@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 
 // Portfolio assistant widget. Talks to /.netlify/functions/chat, which owns
 // the Claude API key and the tool-use loop - this component only ever sees
