@@ -6,7 +6,7 @@
 // POST body: { message: string, history: Array<{role, content}> }
 // Response:  { reply: string, history: Array<{role, content}> }
 
-const { toolSchemas, runTool } = require("./tools");
+import { toolSchemas, runTool } from "./tools.js";
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 const MODEL = "claude-sonnet-4-6";
@@ -38,7 +38,7 @@ reach out directly.
 Keep answers conversational and concise — a few sentences, not an essay, unless the visitor asks
 for more detail.`;
 
-exports.handler = async (event) => {
+export const handler = async (event) => {
   if (event.httpMethod !== "POST") {
     return { statusCode: 405, body: "Method not allowed" };
   }
