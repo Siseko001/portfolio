@@ -1,23 +1,28 @@
 ---
-const skills = [
+const withLogo = [
   ["Python", "python", "3776AB"],
   ["pandas", "pandas", "150458"],
   ["NumPy", "numpy", "013243"],
   ["scikit-learn", "scikitlearn", "F7931E"],
-  ["Matplotlib", "matplotlib", "11557C"],
-  ["Seaborn", "seaborn", "FFFFFF"],
   ["JavaScript", "javascript", "F7DF1E"],
   ["Astro", "astro", "BC52EE"],
   ["Tailwind CSS", "tailwindcss", "06B6D4"],
   ["Git", "git", "F05032"],
   ["GitHub", "github", "FFFFFF"],
 ];
+
+const textOnly = ["Matplotlib", "Seaborn"];
 ---
 
 <div class="flex flex-wrap gap-2 max-w-xl">
-  {skills.map(([name, slug, color]) => (
+  {withLogo.map(([name, slug, color]) => (
     <span class="flex items-center gap-2 text-sm px-3 py-1.5 rounded-full bg-neutral-800 text-neutral-300 border border-neutral-700">
       <img src={`https://cdn.simpleicons.org/${slug}/${color}`} alt={name} width="14" height="14" />
+      {name}
+    </span>
+  ))}
+  {textOnly.map((name) => (
+    <span class="text-sm px-3 py-1.5 rounded-full bg-neutral-800 text-neutral-300 border border-neutral-700">
       {name}
     </span>
   ))}
