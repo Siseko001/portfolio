@@ -1,18 +1,7 @@
----
 import BaseLayout from '../layouts/BaseLayout.astro';
-
-const skills = [
-  "Python", "pandas", "NumPy", "scikit-learn", "matplotlib", "seaborn",
-  "JavaScript", "Astro", "Tailwind CSS", "Git/GitHub",
-];
+import TechStack from '../components/TechStack.astro';
 ---
 <BaseLayout title="Skills">
   <h1 class="text-3xl font-bold tracking-tight mb-6">Skills</h1>
-  <div class="flex flex-wrap gap-2 max-w-xl">
-    {skills.map((skill) => (
-      <span class="text-sm px-3 py-1.5 rounded-full bg-neutral-800 text-neutral-300 border border-neutral-700">
-        {skill}
-      </span>
-    ))}
-  </div>
-</BaseLayout>
+  <TechStack />
+</BaseLayout
