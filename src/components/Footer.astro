@@ -1,3 +1,4 @@
+astro
 ---
 const year = new Date().getFullYear();
 
@@ -13,12 +14,12 @@ const tools = [
     <div class="tools-track">
       <div class="tools-group">
         {tools.map((tool) => (
-          <img src={`https://cdn.simpleicons.org/${tool}/ffffff`} alt={tool} />
+          <img src={`https://cdn.simpleicons.org/${tool}`} alt={tool} />
         ))}
       </div>
       <div class="tools-group" aria-hidden="true">
         {tools.map((tool) => (
-          <img src={`https://cdn.simpleicons.org/${tool}/ffffff`} alt="" />
+          <img src={`https://cdn.simpleicons.org/${tool}`} alt="" />
         ))}
       </div>
     </div>
@@ -74,12 +75,13 @@ const tools = [
   .tools-group img {
     height: 28px;
     width: auto;
-    opacity: 0.6;
-    transition: opacity 0.2s ease;
+    opacity: 0.85;
+    transition: opacity 0.2s ease, transform 0.2s ease;
   }
 
   .tools-group img:hover {
     opacity: 1;
+    transform: scale(1.1);
   }
 
   @keyframes scroll-rtl {
