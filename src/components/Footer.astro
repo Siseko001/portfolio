@@ -1,7 +1,29 @@
 ---
 const year = new Date().getFullYear();
+
+const tools = [
+  "react", "tailwindcss", "astro", "python", "mysql", "git",
+  "docker", "visualstudiocode", "jupyter", "anaconda",
+  "googlegemini", "intellijidea", "pycharm",
+];
 ---
 <footer class="border-t border-neutral-800">
+  <!-- Tools marquee -->
+  <div class="tools-marquee py-6 border-b border-neutral-800">
+    <div class="tools-track">
+      <div class="tools-group">
+        {tools.map((tool) => (
+          <img src={`https://cdn.simpleicons.org/${tool}/ffffff`} alt={tool} />
+        ))}
+      </div>
+      <div class="tools-group" aria-hidden="true">
+        {tools.map((tool) => (
+          <img src={`https://cdn.simpleicons.org/${tool}/ffffff`} alt="" />
+        ))}
+      </div>
+    </div>
+  </div>
+
   <div class="max-w-4xl mx-auto px-6 py-6 text-sm text-neutral-500 flex justify-between items-center">
     <span>&copy; {year} Siseko Sodlaka</span>
     <div class="flex gap-4 items-center">
@@ -23,3 +45,49 @@ const year = new Date().getFullYear();
     </div>
   </div>
 </footer>
+
+<style>
+  .tools-marquee {
+    overflow: hidden;
+    width: 100%;
+    mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+  }
+
+  .tools-track {
+    display: flex;
+    width: max-content;
+    animation: scroll-rtl 35s linear infinite;
+  }
+
+  .tools-track:hover {
+    animation-play-state: paused;
+  }
+
+  .tools-group {
+    display: flex;
+    align-items: center;
+    gap: 2.5rem;
+    padding-right: 2.5rem;
+  }
+
+  .tools-group img {
+    height: 28px;
+    width: auto;
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
+  }
+
+  .tools-group img:hover {
+    opacity: 1;
+  }
+
+  @keyframes scroll-rtl {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+</style>
