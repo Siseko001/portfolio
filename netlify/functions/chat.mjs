@@ -105,8 +105,16 @@ const json = (body, status = 200) =>
 export default async (req, context) => {
   if (req.method !== "POST") return json({ error: "Use POST" }, 405);
 
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) return json({ error: "Server is missing ANTHROPIC_API_KEY" }, 500);
+  // Prefer your own key in MY_ANTHROPIC_KEY. Netlify can inject its own
+  // ANTHROPIC_API_KEY (a long "eyJ..." token) that only works with its gateway,
+  // so we use a different variable name to avoid that clash.
+  const clean = (v) => (v || "").trim().replace(/^["']|["']$/g, "");
+  const ownKey = clean(process.env.MY_ANTHROPIC_KEY);
+  const apiKey = ownKey || clean(process.env.ANTHROPIC_API_KEY);
+  const baseUrl = ownKey
+    ? "https://api.anthropic.com"
+    : clean(process.env.ANTHROPIC_BASE_URL) || "https://api.anthropic.com";
+  if (!apiKey) return json({ error: "Server is missing MY_ANTHROPIC_KEY" }, 500);
 
   const ip = context?.ip || req.headers.get("x-nf-client-connection-ip") || "unknown";
   if (rateLimited(ip)) {
@@ -120,18 +128,34 @@ export default async (req, context) => {
     return json({ error: "Invalid JSON" }, 400);
   }
 
-  // Keep only the last 20 plain-text messages and cap their size
-  const incoming = Array.isArray(body.messages) ? body.messages.slice(-20) : [];
+  // Accept either { messages: [...] } or { message: "...", history: [...] }
+  let incoming = [];
+  if (Array.isArray(body.messages)) {
+    incoming = body.messages;
+  } else if (typeof body.message === "string") {
+    const history = Array.isArray(body.history) ? body.history : [];
+    incoming = [...history, { role: "user", content: body.message }];
+  }
+
+  // Keep the last 20 plain-text messages, cap their size, normalise roles
   const messages = incoming
-    .filter((m) => (m.role === "user" || m.role === "assistant") && typeof m.content === "string")
-    .map((m) => ({ role: m.role, content: m.content.slice(0, 2000) }));
+    .slice(-20)
+    .map((m) => ({
+      role: m && m.role === "user" ? "user" : "assistant",
+      content: String((m && (m.content ?? m.text)) ?? "").slice(0, 2000),
+    }))
+    .filter((m) => m.content.trim());
+
+  // The API requires the conversation to start with a user message
+  while (messages.length && messages[0].role !== "user") messages.shift();
+
   if (!messages.length || messages[messages.length - 1].role !== "user") {
-    return json({ error: "Send a messages array ending with a user message" }, 400);
+    return json({ error: "Send { message, history } or { messages } ending with a user message" }, 400);
   }
 
   try {
     for (let round = 0; round < MAX_TOOL_ROUNDS; round++) {
-      const res = await fetch("https://api.anthropic.com/v1/messages", {
+      const res = await fetch(`${baseUrl}/v1/messages`, {
         method: "POST",
         headers: {
           "content-type": "application/json",
@@ -150,6 +174,10 @@ export default async (req, context) => {
       if (!res.ok) {
         const detail = await res.text();
         console.error("Anthropic error", res.status, detail);
+        if (res.status === 401) {
+          // Safe hint for debugging (server log only, never sent to the browser)
+          console.error(`Key check: length=${apiKey.length}, starts with "${apiKey.slice(0, 10)}"`);
+        }
         return json({ error: `Anthropic API error ${res.status}`, detail }, 502);
       }
 
