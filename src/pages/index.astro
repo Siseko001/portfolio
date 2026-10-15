@@ -9,6 +9,14 @@ const allProjects = await getCollection('projects');
 const featured = allProjects
   .filter((p) => p.data.featured)
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+// Keys = project file names in src/content/projects/ (without .md)
+// Values = image paths inside the public/ folder
+const images: Record<string, string> = {
+  'car-project': '/car-project.png',
+  'ml-flyrank': '/ml-flyrank.png',
+  'ml-models': '/ml-models.png',
+};
 ---
 <BaseLayout title="Home">
   <div class="mb-8">
@@ -39,20 +47,39 @@ const featured = allProjects
   <section>
     <h2 class="text-xl font-semibold mb-6">Featured work</h2>
     <div id="project-grid" class="grid gap-6 sm:grid-cols-2">
-      {featured.map((project) => (
-        <div
-          class="project-item"
-          data-title={project.data.title.toLowerCase()}
-          data-tech={project.data.techStack.join(' ').toLowerCase()}
-        >
-          <ProjectCard
-            title={project.data.title}
-            description={project.data.description}
-            techStack={project.data.techStack}
-            slug={project.slug}
-          />
-        </div>
-      ))}
+      {featured.map((project) => {
+        const key = project.slug ?? project.id.replace(/\.mdx?$/, '');
+        const image = images[key];
+        return (
+          <div
+            class="project-item"
+            data-title={project.data.title.toLowerCase()}
+            data-tech={project.data.techStack.join(' ').toLowerCase()}
+          >
+            {image ? (
+              <a
+                href={`/projects/${key}`}
+                aria-label={project.data.title}
+                class="block overflow-hidden rounded-xl border border-neutral-800 transition hover:scale-[1.02] hover:border-neutral-600"
+              >
+                <img
+                  src={image}
+                  alt={project.data.title}
+                  class="w-full h-auto"
+                  loading="lazy"
+                />
+              </a>
+            ) : (
+              <ProjectCard
+                title={project.data.title}
+                description={project.data.description}
+                techStack={project.data.techStack}
+                slug={project.slug}
+              />
+            )}
+          </div>
+        );
+      })}
     </div>
     <p id="no-results" class="text-neutral-500 text-sm hidden">No projects match your search.</p>
   </section>
