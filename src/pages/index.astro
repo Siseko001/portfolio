@@ -57,18 +57,20 @@ const images: Record<string, string> = {
             data-tech={project.data.techStack.join(' ').toLowerCase()}
           >
             {image ? (
-              <a
-                href={`/projects/${key}`}
-                aria-label={project.data.title}
-                class="block overflow-hidden rounded-xl border border-neutral-800 transition hover:scale-[1.02] hover:border-neutral-600"
-              >
-                <img
-                  src={image}
-                  alt={project.data.title}
-                  class="w-full h-auto"
-                  loading="lazy"
-                />
-              </a>
+              <div class="tilt-wrap">
+                <a
+                  href={`/projects/${key}`}
+                  aria-label={project.data.title}
+                  class="tilt-card block overflow-hidden rounded-xl border border-neutral-800"
+                >
+                  <img
+                    src={image}
+                    alt={project.data.title}
+                    class="w-full h-auto block"
+                    loading="lazy"
+                  />
+                </a>
+              </div>
             ) : (
               <ProjectCard
                 title={project.data.title}
@@ -88,6 +90,43 @@ const images: Record<string, string> = {
   </div>
 </BaseLayout>
 
+<style>
+  .tilt-wrap {
+    perspective: 1000px;
+  }
+
+  .tilt-card {
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.2s ease-out, box-shadow 0.3s ease;
+    will-change: transform;
+  }
+
+  .tilt-card:hover {
+    box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.8);
+    border-color: rgb(115 115 115);
+  }
+
+  /* Soft light that follows the mouse */
+  .tilt-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    background: radial-gradient(
+      circle at var(--glare-x, 50%) var(--glare-y, 50%),
+      rgba(255, 255, 255, 0.25),
+      transparent 55%
+    );
+  }
+
+  .tilt-card:hover::after {
+    opacity: 1;
+  }
+</style>
+
 <script>
   const input = document.getElementById('project-search') as HTMLInputElement;
   const items = document.querySelectorAll<HTMLElement>('.project-item');
@@ -106,4 +145,29 @@ const images: Record<string, string> = {
 
     noResults?.classList.toggle('hidden', visibleCount !== 0);
   });
+
+  // 3D tilt on project pictures
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const MAX_TILT = 14; // degrees
+
+  if (!reduceMotion) {
+    document.querySelectorAll<HTMLElement>('.tilt-card').forEach((card) => {
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width;
+        const y = (e.clientY - rect.top) / rect.height;
+        const rotateY = (x - 0.5) * 2 * MAX_TILT;
+        const rotateX = (0.5 - y) * 2 * MAX_TILT;
+
+        card.style.transform =
+          `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.04, 1.04, 1.04)`;
+        card.style.setProperty('--glare-x', `${x * 100}%`);
+        card.style.setProperty('--glare-y', `${y * 100}%`);
+      });
+
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = '';
+      });
+    });
+  }
 </script>

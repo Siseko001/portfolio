@@ -68,7 +68,11 @@ export default function ChatWidget() {
   }
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 font-sans">
+    // Moved up: original 1rem (bottom-4) + 20mm
+    <div
+      className="fixed right-4 z-50 font-sans"
+      style={{ bottom: "calc(1rem + 20mm)" }}
+    >
       {open ? (
         <div className="w-80 sm:w-96 h-[28rem] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-gray-200">
           <div className="flex items-center justify-between px-4 py-3 bg-gray-900 text-white">
